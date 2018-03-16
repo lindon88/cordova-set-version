@@ -22,6 +22,8 @@ async function cordovaSetVersion(...args) {
     version = version || null;
     buildNumber = buildNumber || null;
 
+    let androidVersionCode = null;
+
     if (typeof configPath !== 'string') {
         throw TypeError('"configPath" argument must be a string');
     }
@@ -45,6 +47,7 @@ async function cordovaSetVersion(...args) {
         const packageFile = await readFile('./package.json', 'UTF-8');
         const pkg = JSON.parse(packageFile);
         ({ version } = pkg);
+        ({ androidVersionCode } = pkg);
     }
 
     if (version) {
@@ -55,6 +58,10 @@ async function cordovaSetVersion(...args) {
         xml.widget.$['android-versionCode'] = buildNumber;
         xml.widget.$['ios-CFBundleVersion'] = buildNumber;
         xml.widget.$['osx-CFBundleVersion'] = buildNumber;
+    }
+
+    if (androidVersionCode) {
+        xml.widget.$['android-versionCode'] = androidVersionCode;
     }
 
     const newData = xmlBuilder.buildObject(xml);

@@ -92,19 +92,7 @@
         "url": "https://github.com/gligoran/cordova-set-version.git"
     },
     "scripts": {
-        "build": "babel --out-dir dist src",
-        "commit": "git-cz",
-        "coverage": "nyc npm test",
-        "lint": "eslint src test",
-        "lint:fix": "npm run lint -- --fix",
-        "postcoverage": "nyc check-coverage",
-        "prebuild": "rimraf build",
-        "precommit": "npm run coverage",
-        "report-coverage": "nyc report --reporter=lcov",
-        "semantic-release": "semantic-release pre && npm publish && semantic-release post",
-        "test": "npm run lint && npm run build && chmod +x dist/cli.js && mocha --require babel-register --require babel-polyfill",
-        "test:watch": "npm test -- --watch --reporter mocha-better-spec-reporter --reporter-options clear-screen=true",
-        "upload-coverage": "codecov"
+        
     },
     "version": "4.0.1"
 }
