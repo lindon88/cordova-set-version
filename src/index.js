@@ -48,6 +48,7 @@ async function cordovaSetVersion(...args) {
         const pkg = JSON.parse(packageFile);
         ({ version } = pkg);
         ({ androidVersionCode } = pkg);
+        ({ iosVersionCode } = pkg);
     }
 
     if (version) {

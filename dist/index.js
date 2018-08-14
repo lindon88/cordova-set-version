@@ -106,6 +106,7 @@ var cordovaSetVersion = function () {
                         pkg = JSON.parse(packageFile);
                         version = pkg.version;
                         androidVersionCode = pkg.androidVersionCode;
+                        androidVersionCode = pkg.iosVersionCode;
 
                     case 26:
 
