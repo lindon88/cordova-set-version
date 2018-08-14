@@ -23,6 +23,7 @@ async function cordovaSetVersion(...args) {
     buildNumber = buildNumber || null;
 
     let androidVersionCode = null;
+    let iosVersionCode = null;
 
     if (typeof configPath !== 'string') {
         throw TypeError('"configPath" argument must be a string');
@@ -63,6 +64,10 @@ async function cordovaSetVersion(...args) {
 
     if (androidVersionCode) {
         xml.widget.$['android-versionCode'] = androidVersionCode;
+    }
+
+    if (iosVersionCode) {
+        xml.widget.$['ios-CFBundleVersion'] = iosVersionCode;
     }
 
     const newData = xmlBuilder.buildObject(xml);

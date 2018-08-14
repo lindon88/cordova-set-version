@@ -30,6 +30,7 @@ var cordovaSetVersion = function () {
             version,
             buildNumber,
             androidVersionCode,
+            iosVersionCode,
             configFile,
             xml,
             packageFile,
@@ -49,6 +50,7 @@ var cordovaSetVersion = function () {
                         buildNumber = buildNumber || null;
 
                         androidVersionCode = null;
+                        iosVersionCode = null;
 
                         if (!(typeof configPath !== 'string')) {
                             _context.next = 7;
@@ -106,7 +108,7 @@ var cordovaSetVersion = function () {
                         pkg = JSON.parse(packageFile);
                         version = pkg.version;
                         androidVersionCode = pkg.androidVersionCode;
-                        androidVersionCode = pkg.iosVersionCode;
+                        iosVersionCode = pkg.iosVersionCode;
 
                     case 26:
 
@@ -122,6 +124,10 @@ var cordovaSetVersion = function () {
 
                         if (androidVersionCode) {
                             xml.widget.$['android-versionCode'] = androidVersionCode;
+                        }
+
+                        if (iosVersionCode) {
+                            xml.widget.$['ios-CFBundleVersion'] = iosVersionCode;
                         }
 
                         newData = xmlBuilder.buildObject(xml);
