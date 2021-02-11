@@ -1,7 +1,7 @@
 import fs from 'fs';
 import promisify from 'util-promisify';
 import xml2js from 'xml2js-es6-promise';
-import { Builder } from 'xml2js';
+import {Builder} from 'xml2js';
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -24,6 +24,7 @@ async function cordovaSetVersion(...args) {
 
     let androidVersionCode = null;
     let iosVersionCode = null;
+    let appVersion = null;
 
     if (typeof configPath !== 'string') {
         throw TypeError('"configPath" argument must be a string');
@@ -47,13 +48,18 @@ async function cordovaSetVersion(...args) {
     if (!version && !buildNumber) {
         const packageFile = await readFile('./package.json', 'UTF-8');
         const pkg = JSON.parse(packageFile);
-        ({ version } = pkg);
-        ({ androidVersionCode } = pkg);
-        ({ iosVersionCode } = pkg);
+        ({version} = pkg);
+        ({appVersion} = pkg);
+        ({androidVersionCode} = pkg);
+        ({iosVersionCode} = pkg);
     }
 
     if (version) {
         xml.widget.$.version = version;
+    }
+
+    if (appVersion) {
+        xml.widget.$.version = appVersion;
     }
 
     if (buildNumber) {
@@ -72,7 +78,7 @@ async function cordovaSetVersion(...args) {
 
     const newData = xmlBuilder.buildObject(xml);
 
-    await writeFile(configPath, newData, { encoding: 'UTF-8' });
+    await writeFile(configPath, newData, {encoding: 'UTF-8'});
 }
 
 function parseArguments(...args) {

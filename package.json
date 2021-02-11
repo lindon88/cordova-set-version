@@ -92,7 +92,7 @@
         "url": "https://github.com/gligoran/cordova-set-version.git"
     },
     "scripts": {
-        
+        "build": "babel --out-dir dist src"
     },
     "version": "4.0.1"
 }

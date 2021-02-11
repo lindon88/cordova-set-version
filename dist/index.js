@@ -31,6 +31,7 @@ var cordovaSetVersion = function () {
             buildNumber,
             androidVersionCode,
             iosVersionCode,
+            appVersion,
             configFile,
             xml,
             packageFile,
@@ -51,32 +52,25 @@ var cordovaSetVersion = function () {
 
                         androidVersionCode = null;
                         iosVersionCode = null;
+                        appVersion = null;
 
                         if (!(typeof configPath !== 'string')) {
-                            _context.next = 7;
+                            _context.next = 9;
                             break;
                         }
 
                         throw TypeError('"configPath" argument must be a string');
 
-                    case 7:
+                    case 9:
                         if (!(version && typeof version !== 'string')) {
-                            _context.next = 9;
+                            _context.next = 11;
                             break;
                         }
 
                         throw TypeError('"version" argument must be a string');
 
-                    case 9:
-                        if (!(buildNumber && typeof buildNumber !== 'number')) {
-                            _context.next = 11;
-                            break;
-                        }
-
-                        throw TypeError('"buildNumber" argument must be an integer');
-
                     case 11:
-                        if (!(buildNumber && buildNumber !== parseInt(buildNumber, 10))) {
+                        if (!(buildNumber && typeof buildNumber !== 'number')) {
                             _context.next = 13;
                             break;
                         }
@@ -84,36 +78,49 @@ var cordovaSetVersion = function () {
                         throw TypeError('"buildNumber" argument must be an integer');
 
                     case 13:
-                        _context.next = 15;
-                        return readFile(configPath, 'UTF-8');
-
-                    case 15:
-                        configFile = _context.sent;
-                        _context.next = 18;
-                        return (0, _xml2jsEs6Promise2.default)(configFile);
-
-                    case 18:
-                        xml = _context.sent;
-
-                        if (!(!version && !buildNumber)) {
-                            _context.next = 26;
+                        if (!(buildNumber && buildNumber !== parseInt(buildNumber, 10))) {
+                            _context.next = 15;
                             break;
                         }
 
-                        _context.next = 22;
+                        throw TypeError('"buildNumber" argument must be an integer');
+
+                    case 15:
+                        _context.next = 17;
+                        return readFile(configPath, 'UTF-8');
+
+                    case 17:
+                        configFile = _context.sent;
+                        _context.next = 20;
+                        return (0, _xml2jsEs6Promise2.default)(configFile);
+
+                    case 20:
+                        xml = _context.sent;
+
+                        if (!(!version && !buildNumber)) {
+                            _context.next = 30;
+                            break;
+                        }
+
+                        _context.next = 24;
                         return readFile('./package.json', 'UTF-8');
 
-                    case 22:
+                    case 24:
                         packageFile = _context.sent;
                         pkg = JSON.parse(packageFile);
                         version = pkg.version;
+                        appVersion = pkg.appVersion;
                         androidVersionCode = pkg.androidVersionCode;
                         iosVersionCode = pkg.iosVersionCode;
 
-                    case 26:
+                    case 30:
 
                         if (version) {
                             xml.widget.$.version = version;
+                        }
+
+                        if (appVersion) {
+                            xml.widget.$.version = appVersion;
                         }
 
                         if (buildNumber) {
@@ -131,10 +138,10 @@ var cordovaSetVersion = function () {
                         }
 
                         newData = xmlBuilder.buildObject(xml);
-                        _context.next = 32;
+                        _context.next = 38;
                         return writeFile(configPath, newData, { encoding: 'UTF-8' });
 
-                    case 32:
+                    case 38:
                     case 'end':
                         return _context.stop();
                 }
