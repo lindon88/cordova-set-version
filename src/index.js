@@ -8,6 +8,7 @@ const writeFile = promisify(fs.writeFile);
 
 const xmlBuilder = new Builder();
 const DefaultConfigPath = './config.xml';
+const DefaultEnvPath = './src/environments/';
 
 /**
  * Set Version and/or Build Number of Cordova config.xml.
@@ -16,11 +17,12 @@ const DefaultConfigPath = './config.xml';
  * @param {number} [buildNumber]
  */
 async function cordovaSetVersion(...args) {
-    let [configPath, version, buildNumber] = parseArguments(...args);
+    let [configPath, envPath, version, buildNumber] = parseArguments(...args);
 
     configPath = configPath || DefaultConfigPath;
     version = version || null;
     buildNumber = buildNumber || null;
+    envPath = envPath || null;
 
     let androidVersionCode = null;
     let iosVersionCode = null;
@@ -60,6 +62,9 @@ async function cordovaSetVersion(...args) {
 
     if (appVersion) {
         xml.widget.$.version = appVersion;
+        if(envPath){
+            updateEnvironmentsVersions(envPath, appVersion);
+        }
     }
 
     if (buildNumber) {
@@ -79,6 +84,65 @@ async function cordovaSetVersion(...args) {
     const newData = xmlBuilder.buildObject(xml);
 
     await writeFile(configPath, newData, {encoding: 'UTF-8'});
+}
+
+function updateEnvironmentsVersions(envPath, appVersion){
+    try{
+        const envStats = fs.statSync(envPath);
+        if(!envStats.isDirectory()){
+            console.log('Can not found environments directory!');
+            return;
+        }
+
+        console.log('Environments directory exists!');
+
+        fs.readdir(envPath, (err, files) => {
+            files.forEach(file => {
+                updateEnvrionmentFile(file, envPath, appVersion);
+            });
+        });
+
+    }catch(exception){
+        console.log(exception);
+    }
+}
+
+async function updateEnvrionmentFile(file, basePath, appVersion){
+    const filePath = basePath + file;
+    try{
+        const exists = fs.existsSync(filePath);
+        if(!exists){
+            console.log('File ' + filePath + ' does not exists!');
+            return;
+        }
+
+        const envFile = await readFile(filePath, 'UTF-8');
+        if(!envFile){
+            return;
+        }
+
+        const lines = envFile.split(/\r?\n/);
+        if(lines && lines.length > 0){
+            let hasChanges = false;
+            for(var i = 0; i < lines.length; i++){
+                let line = lines[i];
+                if(line.indexOf('appVersion:') !== -1){
+                    line = "appVersion: '" + appVersion + "',";
+                    lines[i] = line;
+                    hasChanges = true;
+                }
+            }
+
+            if(hasChanges){
+                await writeFile(filePath, lines.join('\n'), {encoding: 'UTF-8'});
+                console.log('Updated ' + filePath);
+            }
+
+        }
+
+    }catch(exception){
+        console.log(exception);
+    }
 }
 
 function parseArguments(...args) {

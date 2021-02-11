@@ -27,6 +27,7 @@ var cordovaSetVersion = function () {
         var _parseArguments,
             _parseArguments2,
             configPath,
+            envPath,
             version,
             buildNumber,
             androidVersionCode,
@@ -43,69 +44,70 @@ var cordovaSetVersion = function () {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
-                        _parseArguments = parseArguments.apply(undefined, _args), _parseArguments2 = (0, _slicedToArray3.default)(_parseArguments, 3), configPath = _parseArguments2[0], version = _parseArguments2[1], buildNumber = _parseArguments2[2];
+                        _parseArguments = parseArguments.apply(undefined, _args), _parseArguments2 = (0, _slicedToArray3.default)(_parseArguments, 4), configPath = _parseArguments2[0], envPath = _parseArguments2[1], version = _parseArguments2[2], buildNumber = _parseArguments2[3];
 
 
                         configPath = configPath || DefaultConfigPath;
                         version = version || null;
                         buildNumber = buildNumber || null;
+                        envPath = envPath || null;
 
                         androidVersionCode = null;
                         iosVersionCode = null;
                         appVersion = null;
 
                         if (!(typeof configPath !== 'string')) {
-                            _context.next = 9;
+                            _context.next = 10;
                             break;
                         }
 
                         throw TypeError('"configPath" argument must be a string');
 
-                    case 9:
+                    case 10:
                         if (!(version && typeof version !== 'string')) {
-                            _context.next = 11;
+                            _context.next = 12;
                             break;
                         }
 
                         throw TypeError('"version" argument must be a string');
 
-                    case 11:
+                    case 12:
                         if (!(buildNumber && typeof buildNumber !== 'number')) {
-                            _context.next = 13;
+                            _context.next = 14;
                             break;
                         }
 
                         throw TypeError('"buildNumber" argument must be an integer');
 
-                    case 13:
+                    case 14:
                         if (!(buildNumber && buildNumber !== parseInt(buildNumber, 10))) {
-                            _context.next = 15;
+                            _context.next = 16;
                             break;
                         }
 
                         throw TypeError('"buildNumber" argument must be an integer');
 
-                    case 15:
-                        _context.next = 17;
+                    case 16:
+                        _context.next = 18;
                         return readFile(configPath, 'UTF-8');
 
-                    case 17:
+                    case 18:
                         configFile = _context.sent;
-                        _context.next = 20;
+                        _context.next = 21;
                         return (0, _xml2jsEs6Promise2.default)(configFile);
 
-                    case 20:
+                    case 21:
                         xml = _context.sent;
 
                         if (!(!version && !buildNumber)) {
-                            _context.next = 30;
+                            _context.next = 31;
                             break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 25;
                         return readFile('./package.json', 'UTF-8');
 
-                    case 24:
+                    case 25:
                         packageFile = _context.sent;
                         pkg = JSON.parse(packageFile);
                         version = pkg.version;
@@ -113,7 +115,7 @@ var cordovaSetVersion = function () {
                         androidVersionCode = pkg.androidVersionCode;
                         iosVersionCode = pkg.iosVersionCode;
 
-                    case 30:
+                    case 31:
 
                         if (version) {
                             xml.widget.$.version = version;
@@ -121,6 +123,9 @@ var cordovaSetVersion = function () {
 
                         if (appVersion) {
                             xml.widget.$.version = appVersion;
+                            if (envPath) {
+                                updateEnvironmentsVersions(envPath, appVersion);
+                            }
                         }
 
                         if (buildNumber) {
@@ -138,10 +143,10 @@ var cordovaSetVersion = function () {
                         }
 
                         newData = xmlBuilder.buildObject(xml);
-                        _context.next = 38;
+                        _context.next = 39;
                         return writeFile(configPath, newData, { encoding: 'UTF-8' });
 
-                    case 38:
+                    case 39:
                     case 'end':
                         return _context.stop();
                 }
@@ -151,6 +156,93 @@ var cordovaSetVersion = function () {
 
     return function cordovaSetVersion() {
         return _ref.apply(this, arguments);
+    };
+}();
+
+var updateEnvrionmentFile = function () {
+    var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(file, basePath, appVersion) {
+        var filePath, exists, envFile, lines, hasChanges, i, line;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+            while (1) {
+                switch (_context2.prev = _context2.next) {
+                    case 0:
+                        filePath = basePath + file;
+                        _context2.prev = 1;
+                        exists = _fs2.default.existsSync(filePath);
+
+                        if (exists) {
+                            _context2.next = 6;
+                            break;
+                        }
+
+                        console.log('File ' + filePath + ' does not exists!');
+                        return _context2.abrupt('return');
+
+                    case 6:
+                        _context2.next = 8;
+                        return readFile(filePath, 'UTF-8');
+
+                    case 8:
+                        envFile = _context2.sent;
+
+                        if (envFile) {
+                            _context2.next = 11;
+                            break;
+                        }
+
+                        return _context2.abrupt('return');
+
+                    case 11:
+                        lines = envFile.split(/\r?\n/);
+
+                        if (!(lines && lines.length > 0)) {
+                            _context2.next = 19;
+                            break;
+                        }
+
+                        hasChanges = false;
+
+                        for (i = 0; i < lines.length; i++) {
+                            line = lines[i];
+
+                            if (line.indexOf('appVersion:') !== -1) {
+                                line = "appVersion: '" + appVersion + "',";
+                                lines[i] = line;
+                                hasChanges = true;
+                            }
+                        }
+
+                        if (!hasChanges) {
+                            _context2.next = 19;
+                            break;
+                        }
+
+                        _context2.next = 18;
+                        return writeFile(filePath, lines.join('\n'), { encoding: 'UTF-8' });
+
+                    case 18:
+                        console.log('Updated ' + filePath);
+
+                    case 19:
+                        _context2.next = 24;
+                        break;
+
+                    case 21:
+                        _context2.prev = 21;
+                        _context2.t0 = _context2['catch'](1);
+
+                        console.log(_context2.t0);
+
+                    case 24:
+                    case 'end':
+                        return _context2.stop();
+                }
+            }
+        }, _callee2, this, [[1, 21]]);
+    }));
+
+    return function updateEnvrionmentFile(_x, _x2, _x3) {
+        return _ref2.apply(this, arguments);
     };
 }();
 
@@ -175,6 +267,27 @@ var writeFile = (0, _utilPromisify2.default)(_fs2.default.writeFile);
 
 var xmlBuilder = new _xml2js.Builder();
 var DefaultConfigPath = './config.xml';
+var DefaultEnvPath = './src/environments/';
+
+function updateEnvironmentsVersions(envPath, appVersion) {
+    try {
+        var envStats = _fs2.default.statSync(envPath);
+        if (!envStats.isDirectory()) {
+            console.log('Can not found environments directory!');
+            return;
+        }
+
+        console.log('Environments directory exists!');
+
+        _fs2.default.readdir(envPath, function (err, files) {
+            files.forEach(function (file) {
+                updateEnvrionmentFile(file, envPath, appVersion);
+            });
+        });
+    } catch (exception) {
+        console.log(exception);
+    }
+}
 
 function parseArguments() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
