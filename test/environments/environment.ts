@@ -6,7 +6,7 @@ export const environment = {
     production: false,
     name: 'dev',
     useHash: false,
-    appVersion: '1.0.2',
+	appVersion: 'undefined',
     logging: {
         enabled: true,
         mode: 'local',

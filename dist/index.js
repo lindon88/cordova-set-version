@@ -206,7 +206,7 @@ var updateEnvrionmentFile = function () {
                             line = lines[i];
 
                             if (line.indexOf('appVersion:') !== -1) {
-                                line = "appVersion: '" + appVersion + "',";
+                                line = "\tappVersion: '" + appVersion + "',";
                                 lines[i] = line;
                                 hasChanges = true;
                             }

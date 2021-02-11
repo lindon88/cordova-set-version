@@ -127,7 +127,7 @@ async function updateEnvrionmentFile(file, basePath, appVersion){
             for(var i = 0; i < lines.length; i++){
                 let line = lines[i];
                 if(line.indexOf('appVersion:') !== -1){
-                    line = "appVersion: '" + appVersion + "',";
+                    line = "\tappVersion: '" + appVersion + "',";
                     lines[i] = line;
                     hasChanges = true;
                 }
